@@ -1,4 +1,3 @@
-
 import { useProjects } from "@/contexts/ProjectContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,24 +49,22 @@ export default function Dashboard() {
   
   if (loading) {
     return (
-      <div className="container mx-auto animate-fade-in">
-        <div className="grid gap-6">
-          <div className="flex justify-between items-center">
-            <Skeleton className="h-10 w-64" />
-            <Skeleton className="h-10 w-40" />
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-6">
-            {[1, 2, 3].map(i => (
-              <Skeleton key={i} className="h-32" />
-            ))}
-          </div>
-          
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map(i => (
-              <Skeleton key={i} className="h-64" />
-            ))}
-          </div>
+      <div className="animate-fade-in">
+        <div className="flex justify-between items-center mb-6">
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="h-9 w-32" />
+        </div>
+        
+        <div className="grid md:grid-cols-3 gap-6">
+          {[1, 2, 3].map(i => (
+            <Skeleton key={i} className="h-32" />
+          ))}
+        </div>
+        
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map(i => (
+            <Skeleton key={i} className="h-64" />
+          ))}
         </div>
       </div>
     );
@@ -75,7 +72,15 @@ export default function Dashboard() {
 
   return (
     <div className="container mx-auto animate-fade-in">
-      <div className="grid gap-6">
+      <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/70 border-b border-gray-800">
+        <div className="container mx-auto px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center">
+            <img src="/logo.png" alt="Logo" className="h-8" />
+          </div>
+        </div>
+      </nav>
+
+      <div className="grid gap-6 mt-16">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-white">Dashboard</h1>
           <Button 

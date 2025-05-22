@@ -63,7 +63,7 @@ export function AppSidebar() {
           onClick={goToDashboard}
         >
           {!collapsed && (
-            <img src="/logo.svg" alt="Logo" className="h-8" />
+            <img src="/logo.png" alt="Logo" className="h-8" />
           )}
         </div>
         
