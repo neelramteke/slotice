@@ -8,7 +8,7 @@ export function AppLayout() {
   const { currentProject } = useProjects();
 
   return (
-    <SidebarProvider collapsedWidth={64} defaultCollapsed={false}>
+    <SidebarProvider defaultOpen={true}>
       <div className="flex min-h-screen w-full bg-background">
         <AppSidebar />
         

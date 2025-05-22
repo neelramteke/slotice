@@ -20,11 +20,13 @@ export default function Dashboard() {
   const handleAddProject = () => {
     if (newProjectName.trim()) {
       const newProject = addProject(newProjectName.trim(), newProjectDescription.trim());
-      setCurrentProject(newProject);
-      setIsNewProjectModalOpen(false);
-      setNewProjectName("");
-      setNewProjectDescription("");
-      navigate(`/project/${newProject.id}/board`);
+      if (newProject) {
+        setCurrentProject(newProject);
+        setIsNewProjectModalOpen(false);
+        setNewProjectName("");
+        setNewProjectDescription("");
+        navigate(`/project/${newProject.id}/board`);
+      }
     }
   };
 

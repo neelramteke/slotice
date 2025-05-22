@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { 
@@ -29,7 +28,7 @@ interface ProjectContextType {
   currentProject: Project | null;
   
   // Project methods
-  addProject: (name: string, description: string) => void;
+  addProject: (name: string, description: string) => Project;
   updateProject: (project: Project) => void;
   deleteProject: (id: string) => void;
   setCurrentProject: (project: Project | null) => void;
@@ -77,7 +76,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
 
   // Project methods
-  const addProject = (name: string, description: string) => {
+  const addProject = (name: string, description: string): Project => {
     const newProject: Project = {
       id: uuidv4(),
       name,

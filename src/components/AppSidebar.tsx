@@ -20,7 +20,8 @@ import {
 } from "@/components/ui/sidebar";
 
 export function AppSidebar() {
-  const { collapsed } = useSidebar();
+  const sidebarContext = useSidebar();
+  const collapsed = sidebarContext?.state === "collapsed";
   const { projects, addProject, deleteProject, currentProject, setCurrentProject } = useProjects();
   const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
@@ -29,10 +30,12 @@ export function AppSidebar() {
   const handleAddProject = () => {
     if (newProjectName.trim()) {
       const newProject = addProject(newProjectName.trim(), newProjectDescription.trim());
-      setCurrentProject(newProject);
-      setIsNewProjectModalOpen(false);
-      setNewProjectName("");
-      setNewProjectDescription("");
+      if (newProject) {
+        setCurrentProject(newProject);
+        setIsNewProjectModalOpen(false);
+        setNewProjectName("");
+        setNewProjectDescription("");
+      }
     }
   };
 
@@ -44,7 +47,7 @@ export function AppSidebar() {
   return (
     <Sidebar
       className={`border-r border-gray-800 transition-all duration-300 ${collapsed ? "w-16" : "w-64"}`}
-      collapsible
+      collapsible="icon"
     >
       <div className="flex flex-col h-full">
         <div className="flex items-center justify-between p-4">
@@ -66,7 +69,7 @@ export function AppSidebar() {
         </div>
 
         <SidebarContent className="flex-1 overflow-auto">
-          <SidebarGroup defaultOpen>
+          <SidebarGroup>
             <SidebarGroupLabel className="text-xs uppercase tracking-wider text-gray-500">
               {!collapsed && "Projects"}
             </SidebarGroupLabel>
