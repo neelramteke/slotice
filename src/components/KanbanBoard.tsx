@@ -61,6 +61,10 @@ export default function KanbanBoard() {
     loading 
   } = useProjects();
   
+  // Add the missing state variables
+  const [boardColumns, setBoardColumns] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  
   // Task modal state
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isNewTask, setIsNewTask] = useState(true);

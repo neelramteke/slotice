@@ -4,6 +4,7 @@ export interface Project {
   name: string;
   description: string;
   created_at: string;
+  updated_at?: string;
 }
 
 export interface Task {
@@ -14,10 +15,9 @@ export interface Task {
   status: 'todo' | 'in_progress' | 'review' | 'done';
   due_date: string | null;
   created_at: string;
-  // Add missing properties
-  column_id?: string | null;
-  position?: number;
-  updated_at?: string;
+  column_id: string | null;
+  position: number;
+  updated_at: string;
 }
 
 export interface Comment {
@@ -61,5 +61,13 @@ export interface GanttTask {
   end_date: string;
   progress: number;
   dependencies: string[];
+  created_at: string;
+}
+
+export interface BoardColumn {
+  id: string;
+  project_id: string;
+  name: string;
+  position: number;
   created_at: string;
 }
