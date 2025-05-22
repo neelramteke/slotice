@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { format, addDays, differenceInDays, parseISO, isValid, subDays } from "date-fns";
-import { AlertCircle, Plus, Edit } from "lucide-react";
+import { AlertCircle, Plus } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function GanttChart() {
@@ -79,13 +79,17 @@ export default function GanttChart() {
     if (!projectId || !taskTitle.trim() || !taskDueDate) return;
     
     try {
-      const newTask = await addTask(
-        projectId,
-        taskTitle.trim(),
-        taskDescription.trim(),
-        taskStatus,
-        taskDueDate
-      );
+      // Prepare task data object
+      const taskData: Partial<Task> = {
+        project_id: projectId,
+        title: taskTitle.trim(),
+        description: taskDescription.trim(),
+        status: taskStatus,
+        due_date: taskDueDate
+      };
+      
+      // Add the task
+      const newTask = addTask(taskData);
       
       setTasks([...tasks, newTask]);
       setIsTaskModalOpen(false);
@@ -99,17 +103,21 @@ export default function GanttChart() {
     if (!selectedTask || !taskTitle.trim() || !taskDueDate) return;
     
     try {
-      const updatedTask = {
-        ...selectedTask,
+      // Update the task
+      updateTask(selectedTask.id, {
         title: taskTitle.trim(),
         description: taskDescription.trim(),
         status: taskStatus,
         due_date: taskDueDate
-      };
+      });
       
-      await updateTask(updatedTask);
+      // Update local state
+      setTasks(tasks.map(t => 
+        t.id === selectedTask.id 
+          ? { ...t, title: taskTitle.trim(), description: taskDescription.trim(), status: taskStatus, due_date: taskDueDate } 
+          : t
+      ));
       
-      setTasks(tasks.map(t => t.id === selectedTask.id ? updatedTask : t));
       setIsTaskModalOpen(false);
       resetTaskForm();
     } catch (error) {

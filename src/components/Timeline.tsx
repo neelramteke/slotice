@@ -2,15 +2,24 @@
 import { useState, useEffect } from "react";
 import { useProjects } from "@/contexts/ProjectContext";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { Task, CalendarEvent } from "@/types";
 
+// Define the TimelineEvent interface properly
+interface TimelineEvent {
+  id: string;
+  title: string;
+  description: string;
+  date: Date;
+  type: 'task' | 'event';
+  relatedData: Task | CalendarEvent;
+}
+
 // Helper function to get timeline events from tasks and events
-const getTimelineEvents = (tasks: Task[], events: CalendarEvent[]) => {
+const getTimelineEvents = (tasks: Task[], events: CalendarEvent[]): TimelineEvent[] => {
   // Map tasks to timeline events
-  const taskEvents = tasks.map(task => ({
+  const taskEvents: TimelineEvent[] = tasks.map(task => ({
     id: `task-${task.id}`,
     title: `Task: ${task.title}`,
     description: task.description || 'No description provided',
@@ -20,7 +29,7 @@ const getTimelineEvents = (tasks: Task[], events: CalendarEvent[]) => {
   }));
 
   // Map events to timeline events
-  const calendarEvents = events.map(event => ({
+  const calendarEvents: TimelineEvent[] = events.map(event => ({
     id: `event-${event.id}`,
     title: `Event: ${event.title}`,
     description: event.description || 'No description provided',
@@ -34,15 +43,6 @@ const getTimelineEvents = (tasks: Task[], events: CalendarEvent[]) => {
     b.date.getTime() - a.date.getTime()
   );
 };
-
-interface TimelineEvent {
-  id: string;
-  title: string;
-  description: string;
-  date: Date;
-  type: 'task' | 'event';
-  relatedData: any;
-}
 
 // Group events by day
 const groupEventsByDay = (events: TimelineEvent[]) => {
@@ -78,11 +78,11 @@ export default function Timeline() {
       const filteredEvents = events.filter(event => event.project_id === currentProject.id);
       
       // Get timeline events
-      const events = getTimelineEvents(filteredTasks, filteredEvents);
-      setTimelineEvents(events);
+      const timelineEvents = getTimelineEvents(filteredTasks, filteredEvents);
+      setTimelineEvents(timelineEvents);
       
       // Group events by day
-      const grouped = groupEventsByDay(events);
+      const grouped = groupEventsByDay(timelineEvents);
       setGroupedEvents(grouped);
     } else {
       setTimelineEvents([]);

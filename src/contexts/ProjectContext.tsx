@@ -17,12 +17,28 @@ interface ProjectContextType {
   setCurrentProject: (project: Project) => void;
   addProject: (name: string, description: string) => Promise<Project>;
   deleteProject: (id: string) => void;
-  addTask: (taskData: Partial<Task>) => void;
+  addTask: (taskData: Partial<Task>) => Task;
   updateTask: (taskId: string, taskData: Partial<Task>) => void;
   deleteTask: (taskId: string) => void;
   addColumn: (columnData: Partial<BoardColumn>) => void;
   updateColumn: (columnId: string, columnData: Partial<BoardColumn>) => void;
   deleteColumn: (columnId: string) => void;
+  // Note methods
+  getProjectNotes: (projectId: string) => Note[];
+  addNote: (projectId: string, title: string, content: string) => Promise<Note>;
+  updateNote: (note: Note) => Promise<void>;
+  deleteNote: (noteId: string) => Promise<void>;
+  // Check item methods
+  getNoteCheckItems: (noteId: string) => CheckItem[];
+  addCheckItem: (noteId: string, content: string) => Promise<void>;
+  toggleCheckItem: (checkItemId: string) => void;
+  deleteCheckItem: (checkItemId: string) => void;
+  // Calendar event methods
+  getProjectEvents: (projectId: string) => CalendarEvent[];
+  addEvent: (projectId: string, title: string, description: string, startDate: string, endDate: string) => Promise<CalendarEvent>;
+  deleteEvent: (eventId: string) => Promise<void>;
+  // Task methods for specific views
+  getProjectTasks: (projectId: string) => Task[];
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -95,7 +111,7 @@ export const ProjectProvider: React.FC<ProjectProviderProps> = ({ children }) =>
     setColumns(prev => prev.filter(column => column.project_id !== id));
   };
 
-  const addTask = (taskData: Partial<Task>) => {
+  const addTask = (taskData: Partial<Task>): Task => {
     const newTask: Task = {
       id: uuidv4(),
       title: taskData.title || '',
@@ -110,6 +126,7 @@ export const ProjectProvider: React.FC<ProjectProviderProps> = ({ children }) =>
     };
     
     setTasks(prev => [...prev, newTask]);
+    return newTask;
   };
 
   const updateTask = (taskId: string, taskData: Partial<Task>) => {
@@ -184,6 +201,101 @@ export const ProjectProvider: React.FC<ProjectProviderProps> = ({ children }) =>
     }
   };
 
+  // Note methods
+  const getProjectNotes = (projectId: string): Note[] => {
+    return notes.filter(note => note.project_id === projectId);
+  };
+
+  const addNote = async (projectId: string, title: string, content: string): Promise<Note> => {
+    const newNote: Note = {
+      id: uuidv4(),
+      project_id: projectId,
+      title,
+      content,
+      created_at: new Date().toISOString(),
+    };
+    
+    setNotes(prev => [...prev, newNote]);
+    return newNote;
+  };
+
+  const updateNote = async (updatedNote: Note): Promise<void> => {
+    setNotes(prev => prev.map(note => 
+      note.id === updatedNote.id 
+        ? { ...updatedNote, updated_at: new Date().toISOString() } 
+        : note
+    ));
+  };
+
+  const deleteNote = async (noteId: string): Promise<void> => {
+    setNotes(prev => prev.filter(note => note.id !== noteId));
+    setCheckItems(prev => prev.filter(item => item.note_id !== noteId));
+  };
+
+  // Check item methods
+  const getNoteCheckItems = (noteId: string): CheckItem[] => {
+    return checkItems.filter(item => item.note_id === noteId);
+  };
+
+  const addCheckItem = async (noteId: string, content: string): Promise<void> => {
+    const newCheckItem: CheckItem = {
+      id: uuidv4(),
+      note_id: noteId,
+      content,
+      checked: false,
+      created_at: new Date().toISOString(),
+    };
+    
+    setCheckItems(prev => [...prev, newCheckItem]);
+  };
+
+  const toggleCheckItem = (checkItemId: string): void => {
+    setCheckItems(prev => prev.map(item => 
+      item.id === checkItemId 
+        ? { ...item, checked: !item.checked } 
+        : item
+    ));
+  };
+
+  const deleteCheckItem = (checkItemId: string): void => {
+    setCheckItems(prev => prev.filter(item => item.id !== checkItemId));
+  };
+
+  // Event methods
+  const getProjectEvents = (projectId: string): CalendarEvent[] => {
+    return events.filter(event => event.project_id === projectId);
+  };
+
+  const addEvent = async (
+    projectId: string,
+    title: string,
+    description: string,
+    startDate: string,
+    endDate: string
+  ): Promise<CalendarEvent> => {
+    const newEvent: CalendarEvent = {
+      id: uuidv4(),
+      project_id: projectId,
+      title,
+      description,
+      start_date: startDate,
+      end_date: endDate,
+      created_at: new Date().toISOString(),
+    };
+    
+    setEvents(prev => [...prev, newEvent]);
+    return newEvent;
+  };
+
+  const deleteEvent = async (eventId: string): Promise<void> => {
+    setEvents(prev => prev.filter(event => event.id !== eventId));
+  };
+
+  // Task methods for specific views
+  const getProjectTasks = (projectId: string): Task[] => {
+    return tasks.filter(task => task.project_id === projectId);
+  };
+
   const value = {
     projects,
     tasks,
@@ -203,6 +315,18 @@ export const ProjectProvider: React.FC<ProjectProviderProps> = ({ children }) =>
     addColumn,
     updateColumn,
     deleteColumn,
+    getProjectNotes,
+    addNote,
+    updateNote,
+    deleteNote,
+    getNoteCheckItems,
+    addCheckItem,
+    toggleCheckItem,
+    deleteCheckItem,
+    getProjectEvents,
+    addEvent,
+    deleteEvent,
+    getProjectTasks,
   };
 
   return (
