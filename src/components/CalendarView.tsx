@@ -12,25 +12,11 @@ import { format } from 'date-fns';
 import { useProjects } from '@/contexts/ProjectContext';
 import { useParams } from 'react-router-dom';
 import { CalendarEvent } from '@/types';
+import { Skeleton } from "@/components/ui/skeleton";
 
-// Define DayContentProps interface
-interface DayContentProps {
-  date: Date;
-  dayOfMonth: number;
-}
-
-// Custom day component for the calendar
-const CalendarDay = ({ date, dayOfMonth }: DayContentProps) => {
-  return (
-    <div className="w-full h-full">
-      <div className="font-medium">{dayOfMonth}</div>
-    </div>
-  );
-};
-
-const CalendarView = () => {
+export default function CalendarView() {
   const { projectId } = useParams<{ projectId: string }>();
-  const { events, addEvent, deleteEvent, getProjectEvents } = useProjects();
+  const { events, addEvent, deleteEvent, getProjectEvents, loading } = useProjects();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [isAddEventDialogOpen, setIsAddEventDialogOpen] = useState(false);
   const [isViewEventDialogOpen, setIsViewEventDialogOpen] = useState(false);
@@ -59,27 +45,31 @@ const CalendarView = () => {
     });
   }, [selectedDate, projectEvents]);
 
-  const handleAddEvent = () => {
+  const handleAddEvent = async () => {
     if (!projectId || !selectedDate || !newEvent.title) return;
     
     const startDateTime = `${format(selectedDate, 'yyyy-MM-dd')}T${newEvent.startTime}:00`;
     const endDateTime = `${format(selectedDate, 'yyyy-MM-dd')}T${newEvent.endTime}:00`;
     
-    addEvent(
-      projectId,
-      newEvent.title,
-      newEvent.description,
-      startDateTime,
-      endDateTime
-    );
-    
-    setIsAddEventDialogOpen(false);
-    setNewEvent({
-      title: '',
-      description: '',
-      startTime: '09:00',
-      endTime: '10:00'
-    });
+    try {
+      await addEvent(
+        projectId,
+        newEvent.title,
+        newEvent.description,
+        startDateTime,
+        endDateTime
+      );
+      
+      setIsAddEventDialogOpen(false);
+      setNewEvent({
+        title: '',
+        description: '',
+        startTime: '09:00',
+        endTime: '10:00'
+      });
+    } catch (error) {
+      console.error("Error adding event:", error);
+    }
   };
 
   const handleViewEvent = (event: CalendarEvent) => {
@@ -87,9 +77,13 @@ const CalendarView = () => {
     setIsViewEventDialogOpen(true);
   };
 
-  const handleDeleteEvent = (eventId: string) => {
-    deleteEvent(eventId);
-    setIsViewEventDialogOpen(false);
+  const handleDeleteEvent = async (eventId: string) => {
+    try {
+      await deleteEvent(eventId);
+      setIsViewEventDialogOpen(false);
+    } catch (error) {
+      console.error("Error deleting event:", error);
+    }
   };
 
   const handlePrevMonth = () => {
@@ -108,17 +102,25 @@ const CalendarView = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="animate-fade-in space-y-4">
+        <div className="flex justify-between items-center">
+          <Skeleton className="h-8 w-40" />
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <Skeleton className="lg:col-span-8 h-[500px]" />
+          <Skeleton className="lg:col-span-4 h-[500px]" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="animate-fade-in space-y-4">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-white font-display">Calendar</h1>
-        <Button 
-          onClick={() => setIsAddEventDialogOpen(true)}
-          variant="outline" 
-          className="border-neon-purple text-neon-purple hover:bg-neon-purple/20"
-        >
-          <Plus className="mr-2 h-4 w-4" /> Add Event
-        </Button>
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
@@ -164,14 +166,14 @@ const CalendarView = () => {
                 day_outside: "text-gray-500 opacity-50",
               }}
               components={{
-                DayContent: ({ date }) => {
+                DayContent: (props) => {
                   // Find events for this day
-                  const dayStr = format(date, 'yyyy-MM-dd');
+                  const dayStr = format(props.date, 'yyyy-MM-dd');
                   const hasEvents = projectEvents.some(event => event.start_date.split('T')[0] === dayStr);
                   
                   return (
                     <div className="w-full h-full relative">
-                      <div>{date.getDate()}</div>
+                      <div>{props.date.getDate()}</div>
                       {hasEvents && (
                         <div className="absolute bottom-1 right-0 left-0 flex justify-center">
                           <div className="h-1 w-1 bg-neon-blue rounded-full"></div>
@@ -227,6 +229,15 @@ const CalendarView = () => {
               ))
             )}
           </CardContent>
+          
+          <CardFooter>
+            <Button 
+              onClick={() => setIsAddEventDialogOpen(true)}
+              className="w-full bg-neon-purple hover:bg-neon-purple/80 text-white"
+            >
+              <Plus className="mr-2 h-4 w-4" /> Add Event
+            </Button>
+          </CardFooter>
         </Card>
       </div>
       
@@ -351,5 +362,3 @@ const CalendarView = () => {
     </div>
   );
 };
-
-export default CalendarView;

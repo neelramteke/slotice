@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function NotePad() {
   const { projectId } = useParams();
@@ -35,7 +36,8 @@ export default function NotePad() {
     addCheckItem, 
     toggleCheckItem, 
     deleteCheckItem, 
-    getNoteCheckItems 
+    getNoteCheckItems,
+    loading
   } = useProjects();
   
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -47,29 +49,38 @@ export default function NotePad() {
   
   const notes = projectId ? getProjectNotes(projectId) : [];
   
-  const handleAddNote = () => {
+  const handleAddNote = async () => {
     if (projectId && noteTitle.trim()) {
-      if (editingNote) {
-        // Update existing note
-        updateNote({
-          ...editingNote,
-          title: noteTitle.trim(),
-          content: noteContent.trim(),
-        });
-      } else {
-        // Add new note
-        addNote(projectId, noteTitle.trim(), noteContent.trim());
+      try {
+        if (editingNote) {
+          // Update existing note
+          const updatedNote = {
+            ...editingNote,
+            title: noteTitle.trim(),
+            content: noteContent.trim(),
+          };
+          await updateNote(updatedNote);
+        } else {
+          // Add new note
+          await addNote(projectId, noteTitle.trim(), noteContent.trim());
+        }
+        resetForm();
+        setIsNoteModalOpen(false);
+      } catch (error) {
+        console.error("Error with note:", error);
       }
-      resetForm();
-      setIsNoteModalOpen(false);
     }
   };
   
-  const handleDeleteNote = () => {
+  const handleDeleteNote = async () => {
     if (editingNote) {
-      deleteNote(editingNote.id);
-      resetForm();
-      setIsNoteModalOpen(false);
+      try {
+        await deleteNote(editingNote.id);
+        resetForm();
+        setIsNoteModalOpen(false);
+      } catch (error) {
+        console.error("Error deleting note:", error);
+      }
     }
   };
   
@@ -88,14 +99,18 @@ export default function NotePad() {
   const openEditNoteModal = (note: Note) => {
     setEditingNote(note);
     setNoteTitle(note.title);
-    setNoteContent(note.content);
+    setNoteContent(note.content || "");
     setIsNoteModalOpen(true);
   };
   
-  const handleAddCheckItem = () => {
+  const handleAddCheckItem = async () => {
     if (editingNote && newCheckItem.trim()) {
-      addCheckItem(editingNote.id, newCheckItem.trim());
-      setNewCheckItem("");
+      try {
+        await addCheckItem(editingNote.id, newCheckItem.trim());
+        setNewCheckItem("");
+      } catch (error) {
+        console.error("Error adding check item:", error);
+      }
     }
   };
   
@@ -104,6 +119,23 @@ export default function NotePad() {
       handleAddCheckItem();
     }
   };
+
+  if (loading) {
+    return (
+      <div className="animate-fade-in">
+        <div className="flex justify-between items-center mb-6">
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="h-9 w-32" />
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map(i => (
+            <Skeleton key={i} className="h-64" />
+          ))}
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="animate-fade-in">
