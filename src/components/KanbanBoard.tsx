@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useProjects } from "@/contexts/ProjectContext";
@@ -61,9 +60,6 @@ export default function KanbanBoard() {
     deleteBoardColumn,
     loading 
   } = useProjects();
-  
-  const [boardColumns, setBoardColumns] = useState<any[]>([]);
-  const [tasks, setTasks] = useState<Task[]>([]);
   
   // Task modal state
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -207,7 +203,7 @@ export default function KanbanBoard() {
     try {
       if (isNewTask) {
         // Map column ID to status
-        let status = 'todo';
+        let status: 'todo' | 'in_progress' | 'review' | 'done' = 'todo';
         if (selectedColumnId) {
           const column = boardColumns.find(col => col.id === selectedColumnId);
           if (column) {
@@ -234,7 +230,8 @@ export default function KanbanBoard() {
           const updatedTask = {
             ...newTask,
             column_id: selectedColumnId
-          };
+          } as Task;
+          
           await updateTask(updatedTask);
           setTasks([...tasks, updatedTask]);
         } else {
@@ -248,7 +245,8 @@ export default function KanbanBoard() {
           description: taskDescription.trim(),
           due_date: taskDueDate || null,
           column_id: selectedColumnId
-        };
+        } as Task;
+        
         await updateTask(updatedTask);
         setTasks(tasks.map(t => t.id === selectedTask.id ? updatedTask : t));
       }
@@ -340,7 +338,7 @@ export default function KanbanBoard() {
     }
     
     // Get new status based on column
-    let newStatus = taskToMove.status;
+    let newStatus: 'todo' | 'in_progress' | 'review' | 'done' = taskToMove.status;
     const targetColumn = boardColumns.find(col => col.id === columnId);
     if (targetColumn) {
       if (targetColumn.name.toLowerCase().includes('progress')) {
@@ -359,7 +357,7 @@ export default function KanbanBoard() {
         ...taskToMove,
         column_id: columnId,
         status: newStatus
-      };
+      } as Task;
       
       await updateTask(updatedTask);
       

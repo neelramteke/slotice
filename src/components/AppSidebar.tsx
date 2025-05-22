@@ -27,14 +27,18 @@ export function AppSidebar() {
   const [newProjectName, setNewProjectName] = useState("");
   const [newProjectDescription, setNewProjectDescription] = useState("");
 
-  const handleAddProject = () => {
+  const handleAddProject = async () => {
     if (newProjectName.trim()) {
-      const newProject = addProject(newProjectName.trim(), newProjectDescription.trim());
-      if (newProject) {
-        setCurrentProject(newProject);
-        setIsNewProjectModalOpen(false);
-        setNewProjectName("");
-        setNewProjectDescription("");
+      try {
+        const newProject = await addProject(newProjectName.trim(), newProjectDescription.trim());
+        if (newProject) {
+          setCurrentProject(newProject);
+          setIsNewProjectModalOpen(false);
+          setNewProjectName("");
+          setNewProjectDescription("");
+        }
+      } catch (error) {
+        console.error("Failed to create project:", error);
       }
     }
   };

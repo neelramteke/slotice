@@ -14,6 +14,10 @@ export interface Task {
   status: 'todo' | 'in_progress' | 'review' | 'done';
   due_date: string | null;
   created_at: string;
+  // Add missing properties
+  column_id?: string | null;
+  position?: number;
+  updated_at?: string;
 }
 
 export interface Comment {

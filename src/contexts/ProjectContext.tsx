@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { 
@@ -97,7 +96,14 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
           .select('*');
           
         if (tasksError) throw tasksError;
-        setTasks(tasksData);
+        
+        // Ensure task status is of the correct type
+        const typedTasksData: Task[] = tasksData.map((task: any) => ({
+          ...task,
+          status: task.status as 'todo' | 'in_progress' | 'review' | 'done'
+        }));
+        
+        setTasks(typedTasksData);
         
         // Fetch comments
         const { data: commentsData, error: commentsError } = await supabase
@@ -282,9 +288,14 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         
       if (error) throw error;
       
-      setTasks([...tasks, data]);
+      const typedTask: Task = {
+        ...data,
+        status: data.status as 'todo' | 'in_progress' | 'review' | 'done'
+      };
+      
+      setTasks([...tasks, typedTask]);
       toast.success("Task added successfully");
-      return data;
+      return typedTask;
     } catch (error) {
       console.error("Error adding task:", error);
       toast.error("Failed to add task");
