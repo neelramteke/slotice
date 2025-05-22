@@ -1,5 +1,5 @@
 
-import { Project, Task, Comment, Note, CheckItem, CalendarEvent } from '../types';
+import { Project, Task, Comment, Note, CheckItem, CalendarEvent, BoardColumn } from '../types';
 
 // Mock data for initial development (will be replaced by Supabase)
 
@@ -33,6 +33,9 @@ export const mockTasks: Task[] = [
     status: 'done',
     due_date: new Date(Date.now() + 86400000).toISOString(),
     created_at: new Date().toISOString(),
+    column_id: 'col-1', // Added column_id
+    position: 0, // Added position
+    updated_at: new Date().toISOString(), // Added updated_at
   },
   {
     id: '102',
@@ -42,6 +45,9 @@ export const mockTasks: Task[] = [
     status: 'in_progress',
     due_date: new Date(Date.now() + 86400000 * 7).toISOString(),
     created_at: new Date().toISOString(),
+    column_id: 'col-2', // Added column_id
+    position: 1, // Added position
+    updated_at: new Date().toISOString(), // Added updated_at
   },
   {
     id: '103',
@@ -51,6 +57,9 @@ export const mockTasks: Task[] = [
     status: 'todo',
     due_date: new Date(Date.now() + 86400000 * 14).toISOString(),
     created_at: new Date().toISOString(),
+    column_id: 'col-3', // Added column_id
+    position: 2, // Added position
+    updated_at: new Date().toISOString(), // Added updated_at
   },
   {
     id: '104',
@@ -60,6 +69,9 @@ export const mockTasks: Task[] = [
     status: 'todo',
     due_date: new Date(Date.now() + 86400000 * 21).toISOString(),
     created_at: new Date().toISOString(),
+    column_id: 'col-3', // Added column_id
+    position: 3, // Added position
+    updated_at: new Date().toISOString(), // Added updated_at
   },
   {
     id: '201',
@@ -69,6 +81,9 @@ export const mockTasks: Task[] = [
     status: 'done',
     due_date: new Date(Date.now() - 86400000 * 3).toISOString(),
     created_at: new Date().toISOString(),
+    column_id: 'col-1', // Added column_id
+    position: 0, // Added position
+    updated_at: new Date().toISOString(), // Added updated_at
   },
   {
     id: '202',
@@ -78,6 +93,9 @@ export const mockTasks: Task[] = [
     status: 'in_progress',
     due_date: new Date(Date.now() + 86400000 * 5).toISOString(),
     created_at: new Date().toISOString(),
+    column_id: 'col-2', // Added column_id
+    position: 1, // Added position
+    updated_at: new Date().toISOString(), // Added updated_at
   },
 ];
 
@@ -161,6 +179,31 @@ export const mockEvents: CalendarEvent[] = [
     description: 'Present website design to client',
     start_date: new Date(Date.now() + 86400000 * 5).toISOString(),
     end_date: new Date(Date.now() + 86400000 * 5 + 3600000 * 1).toISOString(),
+    created_at: new Date().toISOString(),
+  },
+];
+
+// Add mock board columns
+export const mockBoardColumns: BoardColumn[] = [
+  {
+    id: 'col-1',
+    project_id: '1',
+    name: 'Done',
+    position: 2,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 'col-2',
+    project_id: '1',
+    name: 'In Progress',
+    position: 1,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 'col-3',
+    project_id: '1',
+    name: 'To Do',
+    position: 0,
     created_at: new Date().toISOString(),
   },
 ];
