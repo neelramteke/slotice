@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Kanban, Calendar, ChartGantt, ClipboardList, Plus, Trash2, LayoutDashboard, Clock } from "lucide-react";
@@ -64,9 +63,8 @@ export function AppSidebar() {
           onClick={goToDashboard}
         >
           {!collapsed && (
-            <h1 className="text-xl font-display text-[#e09f3e]">NeonTask</h1>
+            <img src="/logo.svg" alt="Logo" className="h-8" />
           )}
-          <SidebarTrigger className="ml-auto text-gray-400 hover:text-white" />
         </div>
         
         <div className="px-2 mb-4">
@@ -158,7 +156,7 @@ export function AppSidebar() {
             className="flex items-center w-full p-2 rounded-md text-gray-300 hover:bg-secondary/50 transition-colors"
           >
             <LayoutDashboard className="h-4 w-4 mr-2" />
-            {!collapsed && <span>Dashboard</span>}
+            {!collapsed && <span>Home Page</span>}
           </Button>
         </div>
       </div>
@@ -203,6 +201,7 @@ export function AppSidebar() {
             <Button 
               onClick={handleAddProject}
               className="bg-[#e09f3e] hover:bg-[#e09f3e]/80 text-white"
+              disabled={!newProjectName.trim()}
             >
               Create Project
             </Button>

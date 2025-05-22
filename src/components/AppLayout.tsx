@@ -1,4 +1,3 @@
-
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useProjects } from "@/contexts/ProjectContext";
@@ -28,7 +27,7 @@ export function AppLayout() {
         <AppSidebar />
         
         <div className="flex-1 flex flex-col min-h-screen">
-          <header className="h-14 border-b border-gray-800 flex items-center px-4">
+          <header className="sticky top-0 z-50 backdrop-blur-md bg-background/70 border-b border-gray-800 flex items-center px-4 h-14">
             <SidebarTrigger className="text-gray-400 hover:text-white mr-4" />
             <h1 className="font-display text-xl text-white">
               {currentProject?.name || "Project Management"}
