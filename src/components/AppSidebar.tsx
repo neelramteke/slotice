@@ -1,7 +1,7 @@
 
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
-import { Kanban, Calendar, ChartGantt, ClipboardList, Plus, Trash2 } from "lucide-react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { Kanban, Calendar, ChartGantt, ClipboardList, Plus, Trash2, LayoutDashboard, Clock } from "lucide-react";
 import { useProjects } from "@/contexts/ProjectContext";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -22,6 +22,7 @@ import {
 export function AppSidebar() {
   const sidebarContext = useSidebar();
   const collapsed = sidebarContext?.state === "collapsed";
+  const navigate = useNavigate();
   const { projects, addProject, deleteProject, currentProject, setCurrentProject } = useProjects();
   const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
@@ -48,15 +49,22 @@ export function AppSidebar() {
       ? "flex items-center w-full p-2 rounded-md text-white bg-secondary hover:bg-secondary/80 transition-colors"
       : "flex items-center w-full p-2 rounded-md text-gray-300 hover:bg-secondary/50 transition-colors";
 
+  const goToDashboard = () => {
+    navigate("/");
+  };
+
   return (
     <Sidebar
       className={`border-r border-gray-800 transition-all duration-300 ${collapsed ? "w-16" : "w-64"}`}
       collapsible="icon"
     >
       <div className="flex flex-col h-full">
-        <div className="flex items-center justify-between p-4">
+        <div 
+          className="flex items-center justify-between p-4 cursor-pointer" 
+          onClick={goToDashboard}
+        >
           {!collapsed && (
-            <h1 className="text-xl font-display text-neon-purple">NeonTask</h1>
+            <h1 className="text-xl font-display text-[#e09f3e]">NeonTask</h1>
           )}
           <SidebarTrigger className="ml-auto text-gray-400 hover:text-white" />
         </div>
@@ -65,7 +73,7 @@ export function AppSidebar() {
           <Button 
             onClick={() => setIsNewProjectModalOpen(true)} 
             variant="outline" 
-            className={`${collapsed ? "w-10 h-10 p-0" : "w-full"} border-neon-purple text-neon-purple hover:text-white hover:bg-neon-purple/20 transition-colors`}
+            className={`${collapsed ? "w-10 h-10 p-0" : "w-full"} border-[#e09f3e] text-[#e09f3e] hover:text-white hover:bg-[#e09f3e]/20 transition-colors`}
           >
             <Plus className={`${collapsed ? '' : 'mr-2'} h-4 w-4`} />
             {!collapsed && "New Project"}
@@ -83,7 +91,7 @@ export function AppSidebar() {
                   <div 
                     className={`group flex items-center justify-between w-full p-2 rounded-md cursor-pointer ${
                       currentProject?.id === project.id 
-                        ? "bg-neon-purple/20 text-neon-purple" 
+                        ? "bg-[#e09f3e]/20 text-[#e09f3e]" 
                         : "text-gray-300 hover:bg-gray-800"
                     }`}
                     onClick={() => setCurrentProject(project)}
@@ -118,7 +126,7 @@ export function AppSidebar() {
         </SidebarContent>
         
         {currentProject && (
-          <div className="mt-auto border-t border-gray-800 p-2">
+          <div className="border-t border-gray-800 p-2">
             <NavLink to={`/project/${currentProject.id}/board`} className={getNavCls}>
               <Kanban className="h-4 w-4 mr-2" />
               {!collapsed && <span>Kanban Board</span>}
@@ -135,14 +143,30 @@ export function AppSidebar() {
               <ClipboardList className="h-4 w-4 mr-2" />
               {!collapsed && <span>Notes</span>}
             </NavLink>
+            <NavLink to={`/project/${currentProject.id}/timeline`} className={getNavCls}>
+              <Clock className="h-4 w-4 mr-2" />
+              {!collapsed && <span>Timeline</span>}
+            </NavLink>
           </div>
         )}
+        
+        {/* Dashboard button at bottom of sidebar */}
+        <div className="mt-auto border-t border-gray-800 p-2">
+          <Button
+            onClick={goToDashboard}
+            variant="ghost"
+            className="flex items-center w-full p-2 rounded-md text-gray-300 hover:bg-secondary/50 transition-colors"
+          >
+            <LayoutDashboard className="h-4 w-4 mr-2" />
+            {!collapsed && <span>Dashboard</span>}
+          </Button>
+        </div>
       </div>
       
       <Dialog open={isNewProjectModalOpen} onOpenChange={setIsNewProjectModalOpen}>
         <DialogContent className="bg-gray-900 text-white border border-gray-800">
           <DialogHeader>
-            <DialogTitle className="text-neon-purple font-display">Create New Project</DialogTitle>
+            <DialogTitle className="text-[#e09f3e] font-display">Create New Project</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
@@ -153,7 +177,7 @@ export function AppSidebar() {
                 id="project-name"
                 value={newProjectName}
                 onChange={(e) => setNewProjectName(e.target.value)}
-                className="bg-gray-800 border-gray-700 focus:border-neon-purple text-white"
+                className="bg-gray-800 border-gray-700 focus:border-[#e09f3e] text-white"
               />
             </div>
             <div className="grid gap-2">
@@ -164,7 +188,7 @@ export function AppSidebar() {
                 id="project-description"
                 value={newProjectDescription}
                 onChange={(e) => setNewProjectDescription(e.target.value)}
-                className="bg-gray-800 border-gray-700 focus:border-neon-purple text-white min-h-[100px]"
+                className="bg-gray-800 border-gray-700 focus:border-[#e09f3e] text-white min-h-[100px]"
               />
             </div>
           </div>
@@ -178,7 +202,7 @@ export function AppSidebar() {
             </Button>
             <Button 
               onClick={handleAddProject}
-              className="bg-neon-purple hover:bg-neon-purple/80 text-white"
+              className="bg-[#e09f3e] hover:bg-[#e09f3e]/80 text-white"
             >
               Create Project
             </Button>

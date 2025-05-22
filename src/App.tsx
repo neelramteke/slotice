@@ -11,6 +11,7 @@ import KanbanBoard from "./pages/KanbanBoard";
 import GanttChart from "./pages/GanttChart";
 import CalendarView from "./pages/CalendarView";
 import NotePad from "./pages/NotePad";
+import Timeline from "./pages/Timeline";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="gantt" element={<GanttChart />} />
               <Route path="calendar" element={<CalendarView />} />
               <Route path="notes" element={<NotePad />} />
+              <Route path="timeline" element={<Timeline />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

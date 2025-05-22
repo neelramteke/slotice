@@ -10,19 +10,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell
-} from 'recharts';
 
 export default function Dashboard() {
   const { projects, addProject, setCurrentProject, tasks, events, loading } = useProjects();
@@ -56,32 +43,10 @@ export default function Dashboard() {
     }
   };
 
-  // Prepare data for the overview charts
+  // Prepare data for the overview statistics
   const totalProjects = projects.length;
   const totalTasks = tasks.length;
   const totalEvents = events.length;
-
-  // Prepare task status data for pie chart
-  const taskStatusData = [
-    { name: 'To Do', value: tasks.filter(t => t.status === 'todo').length },
-    { name: 'In Progress', value: tasks.filter(t => t.status === 'in_progress').length },
-    { name: 'Review', value: tasks.filter(t => t.status === 'review').length },
-    { name: 'Done', value: tasks.filter(t => t.status === 'done').length }
-  ].filter(item => item.value > 0);
-
-  // Task statuses by project for bar chart
-  const projectTasksData = projects.map(project => {
-    const projectTasks = tasks.filter(task => task.project_id === project.id);
-    return {
-      name: project.name.substring(0, 15) + (project.name.length > 15 ? '...' : ''),
-      'To Do': projectTasks.filter(t => t.status === 'todo').length,
-      'In Progress': projectTasks.filter(t => t.status === 'in_progress').length,
-      'Review': projectTasks.filter(t => t.status === 'review').length,
-      'Done': projectTasks.filter(t => t.status === 'done').length,
-    };
-  });
-
-  const COLORS = ['#9b87f5', '#1EAEDB', '#ff6ec4', '#4ade80'];
   
   if (loading) {
     return (
@@ -96,11 +61,6 @@ export default function Dashboard() {
             {[1, 2, 3].map(i => (
               <Skeleton key={i} className="h-32" />
             ))}
-          </div>
-          
-          <div className="grid lg:grid-cols-2 gap-6">
-            <Skeleton className="h-80" />
-            <Skeleton className="h-80" />
           </div>
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -120,7 +80,7 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold text-white">Dashboard</h1>
           <Button 
             onClick={() => setIsNewProjectModalOpen(true)}
-            className="bg-neon-purple hover:bg-neon-purple/80 text-white"
+            className="bg-[#e09f3e] hover:bg-[#e09f3e]/80 text-white"
           >
             <Plus className="mr-2 h-4 w-4" /> New Project
           </Button>
@@ -128,117 +88,51 @@ export default function Dashboard() {
         
         {/* Summary Cards */}
         <div className="grid md:grid-cols-3 gap-6">
-          <Card className="bg-gray-900/70 border-gray-800 hover:shadow-neon-purple/20 transition-all">
+          <Card className="bg-[#fff3b0] border-gray-800 hover:shadow-[#fff3b0]/20 transition-all">
             <CardHeader className="pb-2">
-              <CardTitle className="text-white flex items-center">
-                <BarChart3 className="mr-2 h-5 w-5 text-neon-purple" />
+              <CardTitle className="text-gray-900 flex items-center">
+                <BarChart3 className="mr-2 h-5 w-5 text-[#540b0e]" />
                 Projects
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-white">{totalProjects}</div>
-              <p className="text-gray-400 mt-1 text-sm">
+              <div className="text-3xl font-bold text-gray-900">{totalProjects}</div>
+              <p className="text-gray-700 mt-1 text-sm">
                 Active projects in your workspace
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900/70 border-gray-800 hover:shadow-neon-blue/20 transition-all">
+          <Card className="bg-[#e09f3e] border-gray-800 hover:shadow-[#e09f3e]/20 transition-all">
             <CardHeader className="pb-2">
-              <CardTitle className="text-white flex items-center">
-                <CheckSquare className="mr-2 h-5 w-5 text-neon-blue" />
+              <CardTitle className="text-gray-900 flex items-center">
+                <CheckSquare className="mr-2 h-5 w-5 text-[#540b0e]" />
                 Tasks
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-white">{totalTasks}</div>
-              <p className="text-gray-400 mt-1 text-sm">
+              <div className="text-3xl font-bold text-gray-900">{totalTasks}</div>
+              <p className="text-gray-700 mt-1 text-sm">
                 Total tasks across all projects
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900/70 border-gray-800 hover:shadow-neon-pink/20 transition-all">
+          <Card className="bg-[#540b0e] border-gray-800 hover:shadow-[#540b0e]/20 transition-all">
             <CardHeader className="pb-2">
               <CardTitle className="text-white flex items-center">
-                <CalendarIcon className="mr-2 h-5 w-5 text-neon-pink" />
+                <CalendarIcon className="mr-2 h-5 w-5 text-[#fff3b0]" />
                 Events
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-white">{totalEvents}</div>
-              <p className="text-gray-400 mt-1 text-sm">
+              <p className="text-white/80 mt-1 text-sm">
                 Scheduled events on your calendar
               </p>
             </CardContent>
           </Card>
         </div>
-        
-        {/* Charts */}
-        {totalTasks > 0 && (
-          <div className="grid lg:grid-cols-2 gap-6">
-            <Card className="bg-gray-900/70 border-gray-800">
-              <CardHeader>
-                <CardTitle className="text-white">Tasks by Status</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Distribution of tasks across all projects
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="h-72">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={taskStatusData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {taskStatusData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {projectTasksData.length > 0 && (
-              <Card className="bg-gray-900/70 border-gray-800">
-                <CardHeader>
-                  <CardTitle className="text-white">Tasks by Project</CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Task status breakdown per project
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="h-72">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={projectTasksData}
-                      layout="vertical"
-                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                      <XAxis type="number" stroke="#888" />
-                      <YAxis dataKey="name" type="category" width={100} stroke="#888" />
-                      <Tooltip contentStyle={{ backgroundColor: '#222', border: '1px solid #444' }} />
-                      <Legend />
-                      <Bar dataKey="To Do" fill="#9b87f5" stackId="a" />
-                      <Bar dataKey="In Progress" fill="#1EAEDB" stackId="a" />
-                      <Bar dataKey="Review" fill="#ff6ec4" stackId="a" />
-                      <Bar dataKey="Done" fill="#4ade80" stackId="a" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        )}
         
         {/* Projects list */}
         <div className="mt-4">
@@ -249,7 +143,7 @@ export default function Dashboard() {
               <div className="mb-4 text-gray-400">No projects yet</div>
               <Button 
                 onClick={() => setIsNewProjectModalOpen(true)}
-                className="bg-neon-purple hover:bg-neon-purple/80 text-white"
+                className="bg-[#e09f3e] hover:bg-[#e09f3e]/80 text-white"
               >
                 <Plus className="mr-2 h-4 w-4" /> Create Your First Project
               </Button>
@@ -267,10 +161,10 @@ export default function Dashboard() {
                 return (
                   <Card 
                     key={project.id}
-                    className="bg-gray-900/70 border-gray-800 hover:border-neon-purple/50 transition-all hover:shadow-neon-purple cursor-pointer overflow-hidden group"
+                    className="bg-gray-900/70 border-gray-800 hover:border-[#e09f3e]/50 transition-all hover:shadow-[#e09f3e] cursor-pointer overflow-hidden group"
                     onClick={() => handleSelectProject(project.id)}
                   >
-                    <div className="h-1.5 w-full bg-gradient-to-r from-neon-purple to-neon-blue" />
+                    <div className="h-1.5 w-full bg-gradient-to-r from-[#540b0e] to-[#e09f3e]" />
                     <CardHeader>
                       <CardTitle className="text-white">{project.name}</CardTitle>
                       <CardDescription className="text-gray-400 line-clamp-2">
@@ -285,7 +179,7 @@ export default function Dashboard() {
                         </div>
                         <div className="w-full bg-gray-800 rounded-full h-2">
                           <div 
-                            className="bg-gradient-to-r from-neon-purple to-neon-blue h-2 rounded-full"
+                            className="bg-gradient-to-r from-[#e09f3e] to-[#fff3b0] h-2 rounded-full"
                             style={{ width: `${taskCompletionPercentage}%` }}
                           />
                         </div>
@@ -312,7 +206,7 @@ export default function Dashboard() {
       <Dialog open={isNewProjectModalOpen} onOpenChange={setIsNewProjectModalOpen}>
         <DialogContent className="bg-gray-900 text-white border border-gray-800">
           <DialogHeader>
-            <DialogTitle className="text-neon-purple font-display">Create New Project</DialogTitle>
+            <DialogTitle className="text-[#e09f3e] font-display">Create New Project</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
@@ -323,7 +217,7 @@ export default function Dashboard() {
                 id="project-name"
                 value={newProjectName}
                 onChange={(e) => setNewProjectName(e.target.value)}
-                className="bg-gray-800 border-gray-700 focus:border-neon-purple text-white"
+                className="bg-gray-800 border-gray-700 focus:border-[#e09f3e] text-white"
               />
             </div>
             <div className="grid gap-2">
@@ -334,7 +228,7 @@ export default function Dashboard() {
                 id="project-description"
                 value={newProjectDescription}
                 onChange={(e) => setNewProjectDescription(e.target.value)}
-                className="bg-gray-800 border-gray-700 focus:border-neon-purple text-white min-h-[100px]"
+                className="bg-gray-800 border-gray-700 focus:border-[#e09f3e] text-white min-h-[100px]"
               />
             </div>
           </div>
@@ -348,7 +242,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               onClick={handleAddProject}
-              className="bg-neon-purple hover:bg-neon-purple/80 text-white"
+              className="bg-[#e09f3e] hover:bg-[#e09f3e]/80 text-white"
               disabled={!newProjectName.trim()}
             >
               Create Project
